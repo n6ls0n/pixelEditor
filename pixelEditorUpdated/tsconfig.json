@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "strict": true,
+      "noFallthroughCasesInSwitch": true,
+      "module": "ES6",
+      "jsx": "preserve",
+      "esModuleInterop": true,
+      "sourceMap": true,
+      "allowJs": true,
+      "lib": [
+        "ES2017",
+        "dom"
+      ],
+      "rootDir": "src",
+      "moduleResolution": "node"
+    }
+  }
