@@ -4,6 +4,7 @@ type Value<T> = {
     [key: string]: T;
 };
 
+// State<T> is a simple object where each "value" within the key-value pair is set to the full state of the register at the corresponding key
 type State<T> = {
     [key: string]: LWWRegister<T | null>["state"];
 };
@@ -20,38 +21,30 @@ export default class LWWMap<T>{
         }
     }
 
+    // returns a subset of the #data map where the values are not null.
     get value(){
         const value: Value<T> = {};
-
-        // build up an object where each value is set to the full state of the register at the corresponding key
         for (const [key, register] of this.#data.entries()){
             if (register.value !== null) value[key] = register.value;
         }
         return value
         }
 
+    // It retrieves the state of all non-null registers and returns it as a State<T> object.
     get state(){
-            const state: State<T> = {};
-
-            // build up an object where each value is set to the full state of the register at the corresponding key
-            for (const [key, register] of this.#data.entries()){
-                if (register) state[key] = register.state;
-            }
-
-            return state;
+        const state: State<T> = {};
+        for (const [key, register] of this.#data.entries()){
+            if (register) state[key] = register.state;
+        }
+        return state;
         }
 
-        // Helper function for "set" function below
-    has(key: string){
-            return this.#data.get(key)?.value !== null;
-        }
-
-        // Helper function for "set" function below
+    // Helper function for "set" function below.Checks is a "key" exists within the "#data" map and if it does, it returns the value.
     get(key: string){
             return this.#data.get(key)?.value;
         }
 
-        // Used to change the value if register it exists or create a new one
+    // Used to change the value if register it exists or create a new one
     set(key: string, value: T){
             const register = this.#data.get(key);
 
