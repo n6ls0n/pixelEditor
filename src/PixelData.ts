@@ -1,6 +1,5 @@
 import LWWMap from "./LWWMap";
-
-export type RGB = [red: number, green: number, blue:number];
+import { RGB } from "./types";
 
 export default class PixelData {
     readonly id: string;
