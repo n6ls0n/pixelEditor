@@ -1,5 +1,5 @@
 import PixelData from "./PixelData";
-import type { RGB } from "./PixelData";
+import { RGB } from "./types";
 
 export default class PixelEditor{
     // The underlying <canvas> element
