@@ -1,5 +1,5 @@
-import type {RGB} from "./PixelData";
 import PixelEditor from "./PixelEditor";
+import { RGB } from "./types";
 
 // get alice's canvas
 const acanvas = document.querySelector("#alice");
