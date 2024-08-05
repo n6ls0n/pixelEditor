@@ -1,5 +1,4 @@
 .cache
-dist
+build
 node_modules
 .vscode/
-.parcel-cache
