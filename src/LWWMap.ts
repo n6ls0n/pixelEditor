@@ -1,5 +1,5 @@
 import LWWRegister from "./LWWRegister";
-import { Value, State, RGB } from "./types";
+import { Value, State} from "./types";
 
 
 // This class is used as the key-value store for color data in the PixelData class.
