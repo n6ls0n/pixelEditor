@@ -131,7 +131,7 @@ export default class PixelEditor{
         }
 
 
-    // Draw each pixel on the canvas
+    // Draw each pixel on the canvas by loading the color data from the PixelData class into the appropriate pixel buffer on the canvas
     async #draw(){
         //  The number of channels per pixel; R, G, B, A
         const chans = 4;
@@ -153,6 +153,8 @@ export default class PixelEditor{
 
                 const offset = offsetY + offsetX;
 
+                // This is where the conversion from hex would take place
+                // E.g.
                 const [r, g, b] = this.#data.get(col, row);
                 buffer[offset] = r;
                 buffer[offset + 1] = g;
@@ -161,6 +163,7 @@ export default class PixelEditor{
             }
     }
 
+    // The data variable is used to hold an ImageData object that can be used to create an ImageBitmap object
     const data = new ImageData(buffer, this.#artboard.w, this.#artboard.h);
     const bitmap = await createImageBitmap(data);
     this.#ctx.drawImage(
@@ -186,5 +189,36 @@ export default class PixelEditor{
         this.#data.merge(state);
         this.#draw();
     }
-}
 
+    // setPixelColor(x, y, hexColor) {
+    //     const rgb = hexToRgb(hexColor);
+    //     if (rgb) {
+    //       const index = (y * width + x) * 4;
+    //       data[index] = rgb.r;
+    //       data[index + 1] = rgb.g;
+    //       data[index + 2] = rgb.b;
+    //       data[index + 3] = 255; // Alpha (fully opaque)
+    //     }
+    //   }
+
+    // rgbToHex(rgb: RGB): string {
+    //     const { r, g, b } = rgb;
+    //     const componentToHex = (c) => {
+    //         const hex = c.toString(16);
+    //         return hex.length === 1 ? "0" + hex : hex;
+    //     };
+    //     return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+    // }
+
+    // function hexToRgb(hex) {
+    //     const match = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+    //     if (match) {
+    //       return {
+    //         r: parseInt(match[1], 16),
+    //         g: parseInt(match[2], 16),
+    //         b: parseInt(match[3], 16)
+    //       };
+    //     }
+    //     return null;
+    //   }
+}
