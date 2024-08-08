@@ -1,9 +1,9 @@
 import LWWMap from "./LWWMap";
-import { RGB } from "./types";
+import { RGB, HEX } from "./types";
 
 export default class PixelData {
     readonly id: string;
-    #data: LWWMap<RGB>;
+    #data: LWWMap<HEX>;
 
     constructor (id: string = crypto.randomUUID()){
         this.id = id;
@@ -23,16 +23,16 @@ export default class PixelData {
         return this.#data.state;
     }
 
-    set(x: number, y:number, value: RGB){
+    set(x: number, y:number, value: HEX){
         const key = PixelData.key(x,y);
         this.#data.set(key, value);
     }
 
-    get(x:number, y:number): RGB{
+    get(x:number, y:number): HEX{
         const key = PixelData.key(x,y);
 
         const register = this.#data.get(key);
-        return register ??  [255,255,255]
+        return register ??  ["#FFFFFF"]
     }
 
     delete(x: number, y:number){

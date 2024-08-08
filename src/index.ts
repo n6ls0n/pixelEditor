@@ -29,7 +29,7 @@ bob.onchange = (state) => alice.receive(state);
 palette.oninput = () => {
     const hex = palette.value.substring(1).match(/[\da-f]{2}/g) || [];
     const rgb = hex.map((byte) => parseInt(byte, 16));
-    if (rgb.length === 3) alice.color = bob.color = rgb as RGB;
+    if (rgb.length === 3) alice.drawing_color = bob.drawing_color = rgb as RGB;
 };
 
 

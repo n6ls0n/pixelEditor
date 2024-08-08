@@ -1,103 +1,108 @@
 import PixelData from "./PixelData";
-import { RGB } from "./types";
+import { RGB, HEX} from "./types";
 
 export default class PixelEditor{
+    // ####### INSTANCE PROPERTIES ########
+
     // The underlying <canvas> element
-    #el: HTMLCanvasElement;
+    #canvas_element: HTMLCanvasElement;
 
     // The 2D canvas rendering context
-    #ctx: CanvasRenderingContext2D;
+    #rendering_context: CanvasRenderingContext2D;
 
     // The artboard size, in drawable pixels
     #artboard: {w: number, h: number};
 
     // The underlying pixel data
-    #data = new PixelData();
+    #pixel_data = new PixelData();
 
     // The selected color
-    #color: RGB = [0,0,0];
+    #drawing_color: RGB = [0,0,0];
 
     // The previous position of the mouse cursor
-    #prev: [x: number, y: number] | undefined;
+    #prev_cursor_position: [x: number, y: number] | undefined;
 
     // The set of pixel keys that have been painted during the current drag operation
-    #painted = new Set<string>();
+    #painted_pixels_key_set = new Set<string>();
 
-    // Listeners for change events
+    // An array of listener functions  that will be called for change events
     #listeners: Array<(state: PixelData["state"]) => void> = [];
 
-    constructor(el: HTMLCanvasElement, artboard: { w: number, h: number }){
+    // ####### METHODS ##########
+    constructor(canvas_element: HTMLCanvasElement, artboard: { w: number, h: number }){
         // get the HTML Canvas Element
-        this.#el = el;
+        this.#canvas_element = canvas_element;
 
         //  get the 2d rendering context
-        const ctx = el.getContext("2d");
-        if(!ctx) throw new Error("Couldn't get rendering context");
-        this.#ctx = ctx;
+        const rendering_context = canvas_element.getContext("2d");
+        if(!rendering_context) throw new Error("Couldn't get rendering context");
+        this.#rendering_context = rendering_context;
 
         //  store the artboard size
         this.#artboard = artboard;
 
         // listen for pointer events
-        this.#el.addEventListener("pointerdown", this);
-        this.#el.addEventListener("pointermove", this);
-        this.#el.addEventListener("pointerup", this);
+        this.#canvas_element.addEventListener("pointerdown", this);
+        this.#canvas_element.addEventListener("pointermove", this);
+        this.#canvas_element.addEventListener("pointerup", this);
 
         //  resize the canvas
-        this.#el.width = this.#el.clientWidth * devicePixelRatio
-        this.#el.height = this.#el.clientHeight * devicePixelRatio
-        this.#ctx.scale(devicePixelRatio, devicePixelRatio);
-        this.#ctx.imageSmoothingEnabled = false;
+        this.#canvas_element.width = this.#canvas_element.clientWidth * devicePixelRatio
+        this.#canvas_element.height = this.#canvas_element.clientHeight * devicePixelRatio
+        this.#rendering_context.scale(devicePixelRatio, devicePixelRatio);
+        this.#rendering_context.imageSmoothingEnabled = false;
     }
 
-    // Appends a lister to be called when the state changes
-    // @param listener
+    // Appends a listener to be called when the state changes
+    // @param listener - this is an arrow function that takes a single parameter (state of type PixelData["state"]) and returns void
     set onchange(listener: (state: PixelData["state"]) => void){
         this.#listeners.push(listener);
     }
 
     //  Sets the drawing color
-    set color(color: RGB){
-        this.#color = color;
+    set drawing_color(drawing_color: RGB){
+        this.#drawing_color = drawing_color;
     }
 
     handleEvent(e: PointerEvent){
         switch (e.type){
             // @ts-expect-error
             case "pointerdown":{
-                this.#el.setPointerCapture(e.pointerId);
+                this.#canvas_element.setPointerCapture(e.pointerId);
                 // "fallthrough" is a keyword in switch statements that allows the code to move to the next case without breaking out of the switch.
                 // fallthrough
             }
             // This eslint-disable-next-line comment is used to disable an eslint rule that is applicable to this line of code. In this case, it is disabling the rule that warns about fallthrough cases in a switch statement.
             // eslint-disable-next-line no-fallthrough
             case "pointermove":{
-                if (!this.#el.hasPointerCapture(e.pointerId)) return;
+                if (!this.#canvas_element.hasPointerCapture(e.pointerId)) return;
 
-                const x = Math.floor((this.#artboard.w * e.offsetX) / this.#el.clientWidth),
-                y = Math.floor( (this.#artboard.h * e.offsetY) / this.#el.clientHeight
+                const x = Math.floor((this.#artboard.w * e.offsetX) / this.#canvas_element.clientWidth),
+                y = Math.floor( (this.#artboard.h * e.offsetY) / this.#canvas_element.clientHeight
                 );
                 this.#paint(x, y);
-                this.#prev = [x,y];
+                this.#prev_cursor_position = [x,y];
                 break;
             }
 
             case "pointerup":{
-                this.#el.releasePointerCapture(e.pointerId);
-                this.#prev = undefined;
-                this.#painted.clear();
+                this.#canvas_element.releasePointerCapture(e.pointerId);
+                this.#prev_cursor_position = undefined;
+                this.#painted_pixels_key_set.clear();
                 break;
             }
         }
     }
 
     // Checks if a pixel has been painted during the current drag operation
-    //  @param x X coordinate of the target pixel
-    //  @param y Y coordinate of the target pixel
+    // @param x X coordinate of the target pixel
+    // @param y Y coordinate of the target pixel
+    // Used inside the #paint method
+    //
     #checkPainted(x: number, y: number) {
         const key = PixelData.key(x,y);
-        const painted = this.#painted.has(key);
-        this.#painted.add(key);
+        const painted = this.#painted_pixels_key_set.has(key);
+        this.#painted_pixels_key_set.add(key);
         return painted;
     }
 
@@ -108,9 +113,9 @@ export default class PixelEditor{
         if (x < 0 || this.#artboard.w <= x) return;
         if (y < 0 || this.#artboard.h <= y) return;
 
-        if(!this.#checkPainted(x,y)) this.#data.set(x,y, this.#color);
+        if(!this.#checkPainted(x,y)) this.#pixel_data.set(x,y, this.#drawing_color);
 
-        let [x0, y0] = this.#prev || [x, y];
+        let [x0, y0] = this.#prev_cursor_position || [x, y];
 
         const dx = x - x0, dy = y - y0;
 
@@ -123,7 +128,7 @@ export default class PixelEditor{
             const x1 = Math.round(x0);
             const y1 = Math.round(y0);
 
-            if(!this.#checkPainted(x1,y1)) this.#data.set(x1, y1, this.#color);
+            if(!this.#checkPainted(x1,y1)) this.#pixel_data.set(x1, y1, this.#drawing_color);
         }
 
         this.#draw();
@@ -155,7 +160,7 @@ export default class PixelEditor{
 
                 // This is where the conversion from hex would take place
                 // E.g.
-                const [r, g, b] = this.#data.get(col, row);
+                const [r, g, b] = this.#pixel_data.get(col, row);
                 buffer[offset] = r;
                 buffer[offset + 1] = g;
                 buffer[offset + 2] = b;
@@ -166,27 +171,26 @@ export default class PixelEditor{
     // The data variable is used to hold an ImageData object that can be used to create an ImageBitmap object
     const data = new ImageData(buffer, this.#artboard.w, this.#artboard.h);
     const bitmap = await createImageBitmap(data);
-    this.#ctx.drawImage(
+    this.#rendering_context.drawImage(
         bitmap,
         0,
         0,
-        this.#el.clientWidth,
-        this.#el.clientHeight
+        this.#canvas_element.clientWidth,
+        this.#canvas_element.clientHeight
     );
     }
 
     //  Notify all listeners that the state has changed
     #notify(){
-        const state = this.#data.state;
+        const state = this.#pixel_data.state;
         for (const listener of this.#listeners) listener(state);
     }
-
 
     // Merge remote state with the current state and redraw the canvas
     //  @param state State to merge into the current state
 
     receive(state: PixelData["state"]){
-        this.#data.merge(state);
+        this.#pixel_data.merge(state);
         this.#draw();
     }
 
