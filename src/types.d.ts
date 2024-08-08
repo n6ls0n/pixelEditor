@@ -11,4 +11,4 @@ type State<T> = {
 
 type RGB = [red: number, green: number, blue:number];
 
-type HexColor = `#${string & {length: 6}}`;
+type HEX = [`#${string}`];
