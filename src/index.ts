@@ -1,5 +1,5 @@
 import PixelEditor from "./PixelEditor";
-import { RGB } from "./types";
+import { HEX } from "./types";
 
 // get alice's canvas
 const acanvas = document.querySelector("#alice");
@@ -26,12 +26,19 @@ const bob = new PixelEditor(bcanvas, artboardSize);
 alice.onchange = (state) => bob.receive(state);
 bob.onchange = (state) => alice.receive(state);
 
+// palette.oninput = () => {
+//     const hex = palette.value.substring(1).match(/[\da-f]{2}/g) || [];
+//     const rgb = hex.map((byte) => parseInt(byte, 16));
+//     if (rgb.length === 3) alice.drawing_color = bob.drawing_color = rgb as RGB;
+// };
+
 palette.oninput = () => {
     const hex = palette.value.substring(1).match(/[\da-f]{2}/g) || [];
-    const rgb = hex.map((byte) => parseInt(byte, 16));
-    if (rgb.length === 3) alice.drawing_color = bob.drawing_color = rgb as RGB;
-};
-
+    if (hex.length === 3) {
+      const hexColor = '#' + hex.join('');
+      alice.drawing_color = bob.drawing_color = hexColor as unknown as HEX;
+    }
+  };
 
 
 
