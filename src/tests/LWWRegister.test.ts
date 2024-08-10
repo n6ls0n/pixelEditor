@@ -1,20 +1,20 @@
 import {describe, expect, test} from '@jest/globals';
 import LWWRegister from "../LWWRegister";
-import {Value, State, RGB} from "../types";
+import {Value, State, HEX} from "../types";
 
 
 describe("LWWRegister", () => {
     test("value", () => {
-        const color: RGB = [0, 0, 0];
+        const color: HEX = ["#000000"];
         const id = "test";
-        const register_state: [string, number, RGB] = [id, 0, color];
+        const register_state: [string, number, HEX] = [id, 0, color];
         const register = new LWWRegister(id, register_state);
-        expect(register.value).toEqual([0, 0, 0]);
+        expect(register.value).toEqual(["#000000"]);
     });
     test("Constructor", () => {
         const id = "test";
-        const color: RGB = [0, 0, 0];
-        const register_state: [string, number, RGB] = [id, 0, color];
+        const color: HEX = ["#000000"];
+        const register_state: [string, number, HEX] = [id, 0, color];
 
         const register = new LWWRegister(id, register_state);
 
@@ -24,12 +24,12 @@ describe("LWWRegister", () => {
 
     test("set", () => {
         const id = "test";
-        const color: RGB = [0, 0, 0];
-        const register_state: [string, number, RGB] = [id, 0, color];
+        const color: HEX = ["#000000"];
+        const register_state: [string, number, HEX] = [id, 0, color];
 
         const register = new LWWRegister(id, register_state);
 
-        const newColor: RGB = [255, 255, 255];
+        const newColor: HEX = ["#FFFFFF"];
         register.set(newColor);
 
         expect(register.state).toEqual([id, 1, newColor]);
@@ -37,13 +37,13 @@ describe("LWWRegister", () => {
 
     test("merge_local>remote", () => {
         const id = "test";
-        const color: RGB = [0, 0, 0];
-        const register_state: [string, number, RGB] = [id, 1, color];
+        const color: HEX = ["#000000"];
+        const register_state: [string, number, HEX] = [id, 1, color];
 
         const register = new LWWRegister(id, register_state);
 
-        const newColor: RGB = [255, 255, 255];
-        const newRegisterState: [string, number, RGB] = [id, 0, newColor];
+        const newColor: HEX = ["#FFFFFF"];
+        const newRegisterState: [string, number, HEX] = [id, 0, newColor];
 
         register.merge(newRegisterState);
 
@@ -56,13 +56,13 @@ describe("LWWRegister", () => {
         const local_id = "b";
         const remote_id = "a";
 
-        const color: RGB = [0, 0, 0];
-        const register_state: [string, number, RGB] = [local_id, 0, color];
+        const color: HEX = ["#000000"];
+        const register_state: [string, number, HEX] = [local_id, 0, color];
 
         const register = new LWWRegister(id, register_state);
 
-        const newColor: RGB = [255, 255, 255];
-        const newRegisterState: [string, number, RGB] = [remote_id, 0, newColor];
+        const newColor: HEX = ["#FFFFFF"];
+        const newRegisterState: [string, number, HEX] = [remote_id, 0, newColor];
 
         register.merge(newRegisterState);
 
@@ -71,13 +71,13 @@ describe("LWWRegister", () => {
 
     test("merge_local<remote", () => {
         const id = "test";
-        const color: RGB = [0, 0, 0];
-        const register_state: [string, number, RGB] = [id, 0, color];
+        const color: HEX = ["#000000"];
+        const register_state: [string, number, HEX] = [id, 0, color];
 
         const register = new LWWRegister(id, register_state);
 
-        const newColor: RGB = [255, 255, 255];
-        const newRegisterState: [string, number, RGB] = [id, 1, newColor];
+        const newColor: HEX = ["#FFFFFF"];
+        const newRegisterState: [string, number, HEX] = [id, 1, newColor];
 
         register.merge(newRegisterState);
 

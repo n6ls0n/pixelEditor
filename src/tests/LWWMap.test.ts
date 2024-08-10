@@ -1,5 +1,5 @@
 import {describe, expect, test} from '@jest/globals';
-import { Value, State, RGB } from "../types";
+import { HEX } from "../types";
 import LWWMap from "../LWWMap";
 import LWWRegister from '../LWWRegister';
 
@@ -11,15 +11,15 @@ const register_id3 = "id3";
 
 const map_id = "map_id";
 
-const value1: RGB = [0,0,0];
-const value2: RGB = [0,255,0];
-const value3: RGB = [255,0,0];
-const value4: RGB = [0,0,255];
+const value1: HEX = ["#000000"];
+const value2: HEX = ["#00FF00"]; 
+const value3: HEX = ["#FF0000"];
+const value4: HEX = ["#0000FF"];
 
-const register_state1: [string, number, RGB] = ["a", 0, value1];
-const register_state2: [string, number, RGB] = ["b", 1, value2];
-const register_state3: [string, number, RGB] = ["c", 0, value3];
-const register_state4: [string, number, RGB] = ["d", 1, value4];
+const register_state1: [string, number, HEX] = ["a", 0, value1];
+const register_state2: [string, number, HEX] = ["b", 1, value2];
+const register_state3: [string, number, HEX] = ["c", 0, value3];
+const register_state4: [string, number, HEX] = ["d", 1, value4];
 
 const register_state_object = {[register_id1]: register_state1, [register_id2]: register_state2};
 
