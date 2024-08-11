@@ -9,3 +9,7 @@
 ## Version 2.0.0
 
 - Replaced the RGB type with the HEX and updated the relevant types
+
+## Version 2.0.1
+
+- Updated Webpack Dev Server to use HTTPS (mkcert - <https://github.com/FiloSottile/mkcert>)
