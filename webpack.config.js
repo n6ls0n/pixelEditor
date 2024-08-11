@@ -1,3 +1,4 @@
+const fs = require('fs')
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -38,5 +39,14 @@ module.exports = {
             directory: path.join(__dirname, 'dist'),
         },
         hot: true,
+        host: 'localhost',
+        server: {
+            type: 'https',
+            options: {
+                key: fs.readFileSync('./localhost-key.pem'),
+                cert: fs.readFileSync('./localhost.pem'),
+                },
+        },
+        port: 8080,
     },
 };
